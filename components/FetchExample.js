@@ -1,5 +1,6 @@
 import React from 'react';
 import { FlatList, ActivityIndicator, Text, View } from 'react-native';
+import { IEXCLOUD_SECRET_KEY } from 'react-native-dotenv'
 
 export default class FetchExample extends React.Component {
 
