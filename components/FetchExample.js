@@ -9,8 +9,30 @@ export default class FetchExample extends React.Component {
         this.state = { isLoading: true }
     }
 
+    //Get every quotes :
+    //https://cloud.iexapis.com/beta/ref-data/symbols?token=
+    //Get one quote :
+    //https://cloud.iexapis.com/stable/stock/fb/quote?token=
+    //Flatlist of quotes :
+    /*
+    <View style={{flex: 1, paddingTop:20}}>
+        <FlatList
+          data={quote}
+          renderItem={({item}) => <Text>{item.symbol}, {item.name}</Text>}
+          keyExtractor={({id}, index) => id}
+        />
+      </View>
+    */
+   //View of one quote :
+   /*
+                <View style={{ flex: 1, paddingTop: 20 }}>
+                <Text>Stock Option {quote.companyName}</Text>
+                <Text>{quote.symbol}, {quote.latestPrice}</Text>
+            </View>
+   */
+
     componentDidMount() {
-        return fetch('https://cloud.iexapis.com/stable/stock/fb/quote?token=pk_0a85c2b70b54464f81a834392e0bbba3')
+        return fetch("https://cloud.iexapis.com/beta/ref-data/symbols?token="+IEXCLOUD_SECRET_KEY)
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState(
@@ -37,11 +59,14 @@ export default class FetchExample extends React.Component {
         }
 
         return (
-            <View style={{ flex: 1, paddingTop: 20 }}>
-                <Text>Stock Option {quote.companyName}</Text>
-                <Text>{quote.symbol}, {quote.latestPrice}</Text>
-
-            </View>
+            <View style={{flex: 1, paddingTop:20}}>
+            <FlatList
+              data={quote}
+              renderItem={({item}) => <Text>{item.symbol}, {item.name}</Text>}
+              keyExtractor={({id}, index) => id}
+              onEndReachedThreshold={0.5}
+            />
+          </View>
         );
     }
 }
