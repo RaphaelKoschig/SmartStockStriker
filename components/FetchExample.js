@@ -23,16 +23,17 @@ export default class FetchExample extends React.Component {
         />
       </View>
     */
-   //View of one quote :
-   /*
-                <View style={{ flex: 1, paddingTop: 20 }}>
-                <Text>Stock Option {quote.companyName}</Text>
-                <Text>{quote.symbol}, {quote.latestPrice}</Text>
-            </View>
-   */
+    //View of one quote :
+    /*
+                 <View style={{ flex: 1, paddingTop: 20 }}>
+                 <Text>Stock Option {quote.companyName}</Text>
+                 <Text>{quote.symbol}, {quote.latestPrice}</Text>
+             </View>
+    */
+
 
     componentDidMount() {
-        return fetch("https://cloud.iexapis.com/beta/ref-data/symbols?token="+IEXCLOUD_SECRET_KEY)
+        return fetch("https://cloud.iexapis.com/stable/stock/aapl/quote?token=" + IEXCLOUD_SECRET_KEY)
             .then((response) => response.json())
             .then((responseJson) => {
                 this.setState(
@@ -59,14 +60,11 @@ export default class FetchExample extends React.Component {
         }
 
         return (
-            <View style={{flex: 1, paddingTop:20}}>
-            <FlatList
-              data={quote}
-              renderItem={({item}) => <Text>{item.symbol}, {item.name}</Text>}
-              keyExtractor={({id}, index) => id}
-              onEndReachedThreshold={0.5}
-            />
-          </View>
+            <View style={{ flex: 1, paddingTop: 20 }}>
+                <Text>Stock Option {quote.companyName}</Text>
+                <Text>{quote.symbol}, {quote.latestPrice}</Text>
+            </View>
         );
     }
+    
 }
