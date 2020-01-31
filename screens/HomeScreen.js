@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text, Image } from 'react-native'
-import { responsiveFontSize, responsiveWidth } from 'react-native-responsive-dimensions'
+import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'
 import { Button } from 'react-native-elements';
 
 export default class HomeScreen extends React.Component {
@@ -16,14 +16,14 @@ export default class HomeScreen extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <View style={{flexDirection: 'row',}}>
+                <View style={{ flexDirection: 'row', }}>
                     <Image
                         source={require('../assets/businessman.png')}
-                        style={{ width: 100, height: 200}}
+                        style={{ width: 100, height: 200 }}
                     />
                     <Image
                         source={require('../assets/businesswoman.png')}
-                        style={{ width: 100, height: 200}}
+                        style={{ width: 100, height: 180, marginTop: 10, marginRight: 10}}
                     />
                 </View>
                 <Text style={styles.title}>SMART STOCK BROKER</Text>
@@ -51,9 +51,16 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: responsiveFontSize(3),
+        fontFamily: 'sans-serif-medium',
         fontWeight: 'bold',
         color: '#3f99b5',
         marginBottom: 30,
+        borderTopWidth: 2,
+        borderBottomWidth: 2,
+        borderTopColor: '#d6d7da',
+        borderBottomColor: '#d6d7da',
+        alignItems: 'center',
+        padding: 2,
     },
     button_plain: {
         marginTop: 20,
