@@ -26,7 +26,7 @@ export default class HomeScreen extends React.Component {
                         style={{ width: 100, height: 180, marginTop: 10, marginRight: 10}}
                     />
                 </View>
-                <Text style={styles.title}>SMART STOCK BROKER</Text>
+                <Text style={styles.title}>$MART $TOCK $TRIKER</Text>
                 <Button buttonStyle={styles.button_plain}
                     title="CONNEXION"
                     onPress={() => this.props.navigation.navigate('Login')}
