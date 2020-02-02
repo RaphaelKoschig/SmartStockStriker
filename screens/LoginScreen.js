@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TextInput } from 'react-native'
 import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'
 import { Button } from 'react-native-elements';
 import Input from '../components/Input';
+import { UserManager } from '../models/UserManager';
 
 export default class LoginScreen extends React.Component {
 
@@ -10,11 +11,24 @@ export default class LoginScreen extends React.Component {
         super(props)
 
         this.state = {
-
+            checkEmail: "",
+            checkPassword: "",
         }
     }
 
     render() {
+        const { checkEmail } = this.state;
+        const { checkPassword } = this.state;
+
+        const user = new UserManager();
+
+        const _onLoginPressed = () => {
+
+            user.connectUser(checkEmail, checkPassword, (user) => {
+                this.props.navigation.navigate('Dashboard', { username: user.name, usermail: user.email })
+            })
+        }
+
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
@@ -38,18 +52,18 @@ export default class LoginScreen extends React.Component {
                     />
                     <Button buttonStyle={styles.button_plain}
                         title="CONNEXION"
-                        onPress={() => this.props.navigation.navigate('Login')}
+                        onPress={_onLoginPressed}
                     />
                     <View style={styles.text_inscrit}>
-                        <Text style={{fontWeight:"bold"}}>Pas encore inscrit ?</Text>
+                        <Text style={{ fontWeight: "bold" }}>Pas encore inscrit ?</Text>
                         <Text>Profitez d'un portefeuille virtuel pour tester</Text>
-                        <Text> vos compétences d'actions en bourse ! </Text>
+                        <Text> vos compétences de gestion d'actions ! </Text>
                     </View>
                     <Button buttonStyle={styles.button_white}
                         title="S'inscrire"
                         type="outline"
                         titleStyle={styles.text_inscription}
-                        onPress={() => this.props.navigation.navigate('Inscription')}
+                        onPress={() => this.props.navigation.navigate('Register')}
                     />
                 </View>
             </View>

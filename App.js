@@ -8,16 +8,16 @@ import RegisterScreen from './screens/RegisterScreen';
 
 const Router = createStackNavigator(
   {
-      Home: HomeScreen,
-      Login: LoginScreen,
-      Dashboard: DashboardScreen,
-      SearchQuote: SearchQuoteScreen,
-      Register: RegisterScreen,
+    Home: HomeScreen,
+    Login: LoginScreen,
+    Dashboard: DashboardScreen,
+    SearchQuote: SearchQuoteScreen,
+    Register: RegisterScreen,
   },
-  {    
+  {
     initialRouteName: 'Home',
     headerMode: 'none',
-}
+  }
 );
 
 const App = createAppContainer(Router);
