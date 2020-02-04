@@ -10,8 +10,8 @@ const Router = createStackNavigator(
   {
     Home: HomeScreen,
     Login: LoginScreen,
-    Dashboard: DashboardScreen,
     SearchQuote: SearchQuoteScreen,
+    Dashboard: DashboardScreen,
     Register: RegisterScreen,
   },
   {

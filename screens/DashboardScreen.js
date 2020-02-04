@@ -1,12 +1,10 @@
 import React from 'react'
-import { StyleSheet, View, Text, RefreshControl, } from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
 import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'
-import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { Button } from 'react-native-elements';
-import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
-import { UserManager } from '../models/UserManager';
-import { getQuote } from '../models/QuoteManager';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { NavigationEvents } from 'react-navigation';
+import TransactionTable from '../components/TransactionTable';
 
 export default class DashboardScreen extends React.Component {
 
@@ -14,57 +12,11 @@ export default class DashboardScreen extends React.Component {
         super(props)
 
         this.state = {
-            tableHead: ['Symbol', 'Entreprise', 'Actions', 'Valeur Unitaire', 'Total'],
-            tableData: [],
-            tableFooter: [],
-            tableTotal: [],
+            count: 1,
         }
     }
 
-    componentDidMount() {
-        const navigation = this.props.navigation;
-        const usermail = navigation.getParam('usermail', 'Noname');
-
-
-        const user = new UserManager();
-
-        user.getUserCash(usermail, (usercash) => {
-            //console.log(usercash)
-            var roundUsercash = Number(usercash).toFixed(2)
-            this.setState({ tableFooter: ['Portefeuille', roundUsercash + '$'] })
-            user.getUserId(usermail, (userId) => {
-                user.getUserTotalSharesValue(userId, (totalSharesValue) => {
-                    var roundGlobalTotal = Number(usercash + totalSharesValue).toFixed(2)
-                    this.setState({ tableTotal: ['Actions + Portefeuille', roundGlobalTotal + '$'] })
-                })
-            })
-        })
-
-        user.getUserId(usermail, (userId) => {
-            user.getUserTransactionsGroup(userId, (userTransactionsGroup) => {
-                var tableData = [];
-                userTransactionsGroup.forEach(transaction => {
-                    getQuote(transaction.symbol, (quote) => {
-                        var roundQuotePrice = Number(quote.latestPrice).toFixed(2)
-                        var roundTotalprice = Number(transaction.totalprice).toFixed(2)
-                        var userTransaction = [quote.symbol, quote.companyName, transaction.totalshares, roundQuotePrice + '$', roundTotalprice + '$']
-                        //console.log(userTransaction)
-                        try {
-                            tableData.push(userTransaction)
-                            console.log(tableData)
-                            tableData.sort()
-                            this.setState({ tableData: tableData })
-                        } catch (error) {
-                            console.log(error)
-                        }
-                    })
-                })
-            })
-        })
-    }
-
     render() {
-        const state = this.state;
         const navigation = this.props.navigation;
         const username = navigation.getParam('username', 'Noname');
         const usermail = navigation.getParam('usermail', 'Noname');
@@ -79,15 +31,9 @@ export default class DashboardScreen extends React.Component {
                         onPress={() => this.props.navigation.navigate('SearchQuote', { usermail: usermail })}
                     />
                 </View>
+                <Button title="Refresh" />
                 <View style={styles.content}>
-                    <ScrollView>
-                        <Table style={styles.table} borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
-                            <Row data={state.tableHead} style={styles.head} textStyle={styles.text} />
-                            <Rows data={state.tableData} textStyle={styles.text} />
-                            <Row data={state.tableFooter} flexArr={[4, 1]} textStyle={styles.text} />
-                            <Row data={state.tableTotal} flexArr={[4, 1]} textStyle={[styles.text, { fontWeight: 'bold' }]} />
-                        </Table>
-                    </ScrollView>
+                    <TransactionTable usermail={usermail} />
                 </View>
                 <View style={styles.footer}>
                     <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')}>

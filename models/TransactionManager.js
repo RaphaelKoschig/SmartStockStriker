@@ -46,25 +46,23 @@ export class TransactionManager {
         }
     }
 
-    sellShares(number, price, symbol, userId) {
+    sellShares(number, price, symbol, userId, callback) {
         try {
             this.DB.transaction(tx => {
                 tx.executeSql("SELECT cash FROM users WHERE id = ?;", [userId], (_, { rows }) => {
                     var user = rows.item(0);
                     var usercash = user.cash
-                    tx.executeSql("SELECT shares FROM transactions WHERE user_id = ? AND symbol = ?;", [userId, symbol], (_, { result }) => {
-                        console.log(result)
-                        //var quote = result.item(0);
-                        /*
+                    tx.executeSql("SELECT SUM(shares) AS totalshares FROM transactions WHERE user_id = ? AND symbol = ?;", [userId, symbol], (_, { rows }) => {
+                        var quote = rows.item(0);
                         var quoteShares = quote.totalshares
-                        if (number >= quoteShares) {
+                        if (number <= quoteShares) {
                             var totalPrice = (number * price)
                             usercash += totalPrice
                             tx.executeSql("UPDATE users SET cash = ? WHERE id = ?;", [usercash, userId], (_, { result }) => {
                                 console.log(result)
                                 tx.executeSql('INSERT INTO transactions (user_id, symbol, shares, price) VALUES (?, ?, ?, ?);', [userId, symbol, -(number), totalPrice], (_, { result }) => {
-                                    console.log(result)
-                                    alert('Vente effectuée !')
+                                    callback(result)
+                                    alert('Vente effectuée !');
                                 }, (t, error) => {
                                     console.log(error);
                                 })
@@ -75,8 +73,6 @@ export class TransactionManager {
                         else {
                             alert('Vous n\avez pas assez d\'actions de cette entreprise !')
                         }
-                        */
-
                     })
                 }, (t, error) => {
                     console.log(error);

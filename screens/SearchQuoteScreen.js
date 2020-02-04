@@ -1,8 +1,8 @@
 import React from 'react'
-import { StyleSheet, View, Text } from 'react-native'
+import { StyleSheet, View, Text, Alert } from 'react-native'
 import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'
 import Input from '../components/Input';
-import { Button, PricingCard } from 'react-native-elements';
+import { Button } from 'react-native-elements';
 import { getQuote } from '../models/QuoteManager';
 import { UserManager } from '../models/UserManager';
 import { TransactionManager } from '../models/TransactionManager';
@@ -52,15 +52,16 @@ export default class SearchQuoteScreen extends React.Component {
         const _onBuyPressed = () => {
             user.getUserId(usermail, (userId) => {
                 transaction.buyShares(number, quote.latestPrice, quote.symbol, userId, (success) => {
-                    this.props.navigation.navigate('Dashboard')
+                    this.props.navigation.navigate('Dashboard');
                 })
             })
         }
 
         const _onSellPressed = () => {
             user.getUserId(usermail, (userId) => {
-                transaction.sellShares(number, quote.latestPrice, quote.symbol, userId)
-                //this.props.navigation.navigate('Dashboard')
+                transaction.sellShares(number, quote.latestPrice, quote.symbol, userId, (success) => {
+                    this.props.navigation.navigate('Dashboard');
+                })
             })
         }
 
