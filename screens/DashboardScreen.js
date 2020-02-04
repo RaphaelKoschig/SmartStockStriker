@@ -13,13 +13,14 @@ export default class DashboardScreen extends React.Component {
 
         this.state = {
             count: 1,
+            usermail: "",
         }
     }
 
     render() {
         const navigation = this.props.navigation;
         const username = navigation.getParam('username', 'Noname');
-        const usermail = navigation.getParam('usermail', 'Noname');
+        const usermail = navigation.getParam('usermail', 'Noname');      
 
         return (
             <View style={styles.container}>

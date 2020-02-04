@@ -4,6 +4,7 @@ import { responsiveFontSize, responsiveHeight } from 'react-native-responsive-di
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { ScrollView } from 'react-native-gesture-handler';
 import { UserManager } from '../models/UserManager';
+import { TransactionManager } from '../models/TransactionManager';
 import { getQuote } from '../models/QuoteManager';
 
 export default class DashboardScreen extends React.Component {
@@ -24,6 +25,7 @@ export default class DashboardScreen extends React.Component {
     componentDidMount() {
         const { usermail } = this.state;
         const user = new UserManager();
+        const transaction = new TransactionManager();
 
         user.getUserCash(usermail, (usercash) => {
             var roundUsercash = Number(usercash).toFixed(2)
