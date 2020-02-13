@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text, TextInput } from 'react-native'
+import Toast from 'react-native-simple-toast';
 import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'
 import { Button } from 'react-native-elements';
 import Input from '../components/Input';
@@ -23,10 +24,13 @@ export default class LoginScreen extends React.Component {
         const user = new UserManager();
 
         const _onLoginPressed = () => {
-
-            user.connectUser(checkEmail, checkPassword, (user) => {
-                this.props.navigation.navigate('Dashboard', { username: user.name, usermail: user.email })
-            })
+            if (checkEmail == "" || checkPassword == "") {
+                Toast.show('Veuillez remplir tous les champs !')
+            } else {
+                user.connectUser(checkEmail, checkPassword, (user) => {
+                    this.props.navigation.navigate('Dashboard', { username: user.name, usermail: user.email })
+                })
+            }
         }
 
         return (

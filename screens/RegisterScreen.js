@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text } from 'react-native'
+import Toast from 'react-native-simple-toast';
 import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'
 import { Button } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -32,23 +33,27 @@ export default class RegisterScreen extends React.Component {
         const user = new UserManager();
 
         const _onRegisterPressed = () => {
-
-            if (!nameIsValid) {
-                alert('Nom invalide !')
-            }
-            else if (!emailIsValid) {
-                alert('Email invalide !')
-            }
-            else if (!passwordIsValid[0] || !passwordIsValid[1] || !passwordIsValid[2]) {
-                alert('Password invalide !')
-            }
+            if (name == "" || email == "" || password == "") {
+                Toast.show('Veuillez remplir tous les champs !')
+            } 
             else {
-                    user.addUser(name, email, password, (success) => {
-                        if (success != undefined) {
-                            alert('Vos informations ont été enregistrées')
-                            this.props.navigation.navigate('Home');
-                        }
-                    })
+                if (!nameIsValid) {
+                    Toast.show('Nom invalide !')
+                }
+                else if (!emailIsValid) {
+                    Toast.show('Email invalide !')
+                }
+                else if (!passwordIsValid[0] || !passwordIsValid[1] || !passwordIsValid[2]) {
+                    Toast.show('Password invalide !')
+                }
+                else {
+                        user.addUser(name, email, password, (success) => {
+                            if (success != undefined) {
+                                Toast.show('Vos informations ont été enregistrées')
+                                this.props.navigation.navigate('Home');
+                            }
+                        })
+                }
             }
         }
 

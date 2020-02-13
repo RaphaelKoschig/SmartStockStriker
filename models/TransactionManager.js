@@ -1,16 +1,10 @@
-import * as SQLite from 'expo-sqlite'
+import * as SQLite from 'expo-sqlite';
+import Toast from 'react-native-simple-toast';
 
 
 export class TransactionManager {
     constructor() {
         this.DB = SQLite.openDatabase("database.db");
-        this.DB.transaction(tx => {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY NOT NULL, user_id INTEGER, symbol TEXT, shares INTEGER, price NUMERIC, datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP);', [], (_, { result }) => {
-            }, (t, error) => {
-                console.log(error);
-            }
-            )
-        })
     }
 
     buyShares(number, price, symbol, userId, callback) {
@@ -26,7 +20,7 @@ export class TransactionManager {
                             console.log(result)
                             tx.executeSql('INSERT INTO transactions (user_id, symbol, shares, price) VALUES (?, ?, ?, ?);', [userId, symbol, number, totalPrice], (_, { result }) => {
                                 callback(result)
-                                alert('Achat effectué !')
+                                Toast.show('Achat effectué !')
                             }, (t, error) => {
                                 console.log(error);
                             })
@@ -35,7 +29,7 @@ export class TransactionManager {
                         })
                     }
                     else {
-                        alert('Vous n\avez pas assez de cash')
+                        Toast.show('Vous n\avez pas assez de cash')
                     }
                 }, (t, error) => {
                     console.log(error);
@@ -62,7 +56,7 @@ export class TransactionManager {
                                 console.log(result)
                                 tx.executeSql('INSERT INTO transactions (user_id, symbol, shares, price) VALUES (?, ?, ?, ?);', [userId, symbol, -(number), totalPrice], (_, { result }) => {
                                     callback(result)
-                                    alert('Vente effectuée !');
+                                    Toast.show('Vente effectuée !');
                                 }, (t, error) => {
                                     console.log(error);
                                 })
@@ -71,7 +65,7 @@ export class TransactionManager {
                             })
                         } 
                         else {
-                            alert('Vous n\avez pas assez d\'actions de cette entreprise !')
+                            Toast.show('Vous n\avez pas assez d\'actions de cette entreprise !')
                         }
                     })
                 }, (t, error) => {
@@ -81,15 +75,5 @@ export class TransactionManager {
         } catch (error) {
             console.log(error)
         }
-    }
-
-    dropTransactions() {
-        this.DB.transaction(tx => {
-            tx.executeSql('DROP TABLE transactions;', [], (_, { result }) => {
-            }, (t, error) => {
-                console.log(error);
-            }
-            )
-        })
     }
 }

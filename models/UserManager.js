@@ -1,16 +1,10 @@
-import * as SQLite from 'expo-sqlite'
+import * as SQLite from 'expo-sqlite';
+import Toast from 'react-native-simple-toast';
 
 
 export class UserManager {
     constructor() {
         this.DB = SQLite.openDatabase("database.db");
-        this.DB.transaction(tx => {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY NOT NULL, name TEXT, email TEXT, password TEXT, cash NUMERIC DEFAULT 10000);', [], (_, { result }) => {
-            }, (t, error) => {
-                console.log(error);
-            }
-            )
-        })
     }
 
     connectUser(checkEmail, checkPassword, callback) {
@@ -24,11 +18,11 @@ export class UserManager {
                             callback(user)
                         }
                         else {
-                            alert('Mot de passe incorrect !')
+                            Toast.show('Mot de passe incorrect !')
                         }
                     }
                     else {
-                        alert('Adresse mail invalide !')
+                        Toast.show('Adresse mail invalide !')
                     }
 
                 }, (t, error) => {
@@ -59,12 +53,12 @@ export class UserManager {
                                 })
                             }, (t, error) => {
                                 console.log(error);
-                                alert('Une erreur est survenue dans votre inscription, veuillez réessayer.')
+                                Toast.show('Une erreur est survenue dans votre inscription, veuillez réessayer.')
                             })
                         })
                     }
                     else {
-                        alert('Email déjà pris !')
+                        Toast.show('Email déjà pris !')
                     }
                 })
             })

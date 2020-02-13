@@ -1,10 +1,9 @@
 import React from 'react'
-import { StyleSheet, View, ActivityIndicator } from 'react-native'
+import { StyleSheet, View, ActivityIndicator, Text } from 'react-native'
 import { responsiveFontSize, responsiveHeight } from 'react-native-responsive-dimensions'
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { ScrollView } from 'react-native-gesture-handler';
 import { UserManager } from '../models/UserManager';
-import { TransactionManager } from '../models/TransactionManager';
 import { getQuote } from '../models/QuoteManager';
 
 export default class DashboardScreen extends React.Component {
@@ -14,6 +13,7 @@ export default class DashboardScreen extends React.Component {
 
         this.state = {
             usermail: this.props.usermail,
+            refresh: this.props.refresh,
             tableHead: ['Symbol', 'Entreprise', 'Actions', 'Valeur Unitaire', 'Total'],
             tableData: [],
             tableFooter: [],
@@ -22,10 +22,8 @@ export default class DashboardScreen extends React.Component {
         }
     }
 
-    componentDidMount() {
-        const { usermail } = this.state;
+    mountTable(usermail){
         const user = new UserManager();
-        const transaction = new TransactionManager();
 
         user.getUserCash(usermail, (usercash) => {
             var roundUsercash = Number(usercash).toFixed(2)
@@ -43,34 +41,53 @@ export default class DashboardScreen extends React.Component {
                 var tableData = [];
                 var counter = 0;
                 var limit = userTransactionsGroup.length;
-                userTransactionsGroup.forEach(transaction => {
-                    getQuote(transaction.symbol, (quote) => {
-                        var roundQuotePrice = Number(quote.latestPrice).toFixed(2)
-                        var roundTotalprice = Number(transaction.totalprice).toFixed(2)
-                        var userTransaction = [quote.symbol, quote.companyName, transaction.totalshares, roundQuotePrice + '$', roundTotalprice + '$']
-                        try {
-                            tableData.push(userTransaction)
-                            console.log(tableData)
-                            tableData.sort()
-                            this.setState({ tableData: tableData })
-                            counter += 1;
-                            console.log(counter)
-                        } catch (error) {
-                            console.log(error)
-                        }
-                        if (counter == limit) {
-                            this.setState({isLoading: false})
-                        }
+                if (limit > counter) {
+                    userTransactionsGroup.forEach(transaction => {
+                        getQuote(transaction.symbol, (quote) => {
+                            var roundQuotePrice = Number(quote.latestPrice).toFixed(2)
+                            var roundTotalprice = Number(transaction.totalprice).toFixed(2)
+                            var userTransaction = [quote.symbol, quote.companyName, transaction.totalshares, roundQuotePrice + '$', roundTotalprice + '$']
+                            try {
+                                tableData.push(userTransaction)
+                                console.log(tableData)
+                                tableData.sort()
+                                this.setState({ tableData: tableData })
+                                counter += 1;
+                                console.log(counter)
+                            } catch (error) {
+                                console.log(error)
+                            }
+                            if (counter == limit || limit == undefined) {
+                                this.setState({ isLoading: false })
+                            }
+                        });
                     });
-                });
+                }
+                else {
+                    this.setState({ isLoading: false })
+                }
             });
         });
     }
 
-    render(){
-        
+    componentDidMount() {
+        const { usermail } = this.state;
+        this.mountTable(usermail);
+    }
+
+    UNSAFE_componentWillReceiveProps(props) {
+        this.setState({ isLoading: true });
+        const { usermail } = this.props;
+        if (props.usermail == usermail) {
+            this.mountTable(usermail);
+        }
+      }
+
+    render() {
+
         const state = this.state;
-        
+        const { refresh } = this.state;
+
         if (this.state.isLoading) {
             return (
                 <View style={{ flex: 1, padding: 20 }}>
@@ -81,15 +98,16 @@ export default class DashboardScreen extends React.Component {
 
         return (
             <ScrollView>
-            <Table style={styles.table} borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
-                <Row data={state.tableHead} style={styles.head} textStyle={styles.text} />
-                <Rows data={state.tableData} textStyle={styles.text} />
-                <Row data={state.tableFooter} flexArr={[4, 1]} textStyle={styles.text} />
-                <Row data={state.tableTotal} flexArr={[4, 1]} textStyle={[styles.text, { fontWeight: 'bold' }]} />
-            </Table>
-        </ScrollView>
+                <Text>{refresh}</Text>
+                <Table style={styles.table} borderStyle={{ borderWidth: 2, borderColor: '#c8e1ff' }}>
+                    <Row data={state.tableHead} style={styles.head} textStyle={styles.text} />
+                    <Rows data={state.tableData} textStyle={styles.text} />
+                    <Row data={state.tableFooter} flexArr={[4, 1]} textStyle={styles.text} />
+                    <Row data={state.tableTotal} flexArr={[4, 1]} textStyle={[styles.text, { fontWeight: 'bold' }]} />
+                </Table>
+            </ScrollView>
         )
-    }  
+    }
 }
 
 const styles = StyleSheet.create({

@@ -1,9 +1,9 @@
 import React from 'react'
-import { StyleSheet, View, Text } from 'react-native'
+import { StyleSheet, View, Text } from 'react-native';
+import Toast from 'react-native-simple-toast';
 import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'
 import { Button } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { NavigationEvents } from 'react-navigation';
 import TransactionTable from '../components/TransactionTable';
 
 export default class DashboardScreen extends React.Component {
@@ -12,15 +12,19 @@ export default class DashboardScreen extends React.Component {
         super(props)
 
         this.state = {
-            count: 1,
-            usermail: "",
+            usermail: props.navigation.getParam('usermail', 'Noname'),
         }
     }
 
     render() {
         const navigation = this.props.navigation;
         const username = navigation.getParam('username', 'Noname');
-        const usermail = navigation.getParam('usermail', 'Noname');      
+        const { usermail } = this.state;
+
+        const _onLogoutPressed = () => {
+            this.props.navigation.navigate('Home');
+            Toast.show('Déconnexion !');
+        }
 
         return (
             <View style={styles.container}>
@@ -32,12 +36,11 @@ export default class DashboardScreen extends React.Component {
                         onPress={() => this.props.navigation.navigate('SearchQuote', { usermail: usermail })}
                     />
                 </View>
-                <Button title="Refresh" />
                 <View style={styles.content}>
-                    <TransactionTable usermail={usermail} />
+                    <TransactionTable usermail={usermail}/>
                 </View>
                 <View style={styles.footer}>
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')}>
+                    <TouchableOpacity onPress={_onLogoutPressed}>
                         <Text style={styles.text_unlogin}>Déconnexion</Text>
                     </TouchableOpacity>
                 </View>

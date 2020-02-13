@@ -2,6 +2,9 @@ import React from 'react'
 import { StyleSheet, View, Text, Image } from 'react-native'
 import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'
 import { Button } from 'react-native-elements';
+import { DatabaseManager } from '../models/DatabaseManager';
+
+
 
 export default class HomeScreen extends React.Component {
 
@@ -14,6 +17,7 @@ export default class HomeScreen extends React.Component {
     }
 
     render() {
+        const database = new DatabaseManager();
         return (
             <View style={styles.container}>
                 <View style={{ flexDirection: 'row', }}>

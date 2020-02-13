@@ -1,6 +1,7 @@
-import React from 'react'
-import { StyleSheet, View, Text, Alert } from 'react-native'
-import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'
+import React from 'react';
+import { StyleSheet, View, Text } from 'react-native';
+import Toast from 'react-native-simple-toast';
+import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions';
 import Input from '../components/Input';
 import { Button } from 'react-native-elements';
 import { getQuote } from '../models/QuoteManager';
@@ -40,7 +41,7 @@ export default class SearchQuoteScreen extends React.Component {
 
         const _onSearchPressed = () => {
             if (!symbolIsValid) {
-                alert('Veuillez tapez des caractères valides !')
+                Toast.show('Veuillez tapez des caractères valides !')
             }
             else {
                 getQuote(symbol, (quote) => {
@@ -52,7 +53,7 @@ export default class SearchQuoteScreen extends React.Component {
         const _onBuyPressed = () => {
             user.getUserId(usermail, (userId) => {
                 transaction.buyShares(number, quote.latestPrice, quote.symbol, userId, (success) => {
-                    this.props.navigation.navigate('Dashboard');
+                    this.props.navigation.navigate('Dashboard', {usermail: usermail});
                 })
             })
         }
@@ -60,7 +61,7 @@ export default class SearchQuoteScreen extends React.Component {
         const _onSellPressed = () => {
             user.getUserId(usermail, (userId) => {
                 transaction.sellShares(number, quote.latestPrice, quote.symbol, userId, (success) => {
-                    this.props.navigation.navigate('Dashboard');
+                    this.props.navigation.navigate('Dashboard', {usermail: usermail});
                 })
             })
         }
@@ -77,7 +78,7 @@ export default class SearchQuoteScreen extends React.Component {
                             borderColor: symbolIsValid ? '#17c702' : 'black',
                             borderWidth: symbolIsValid ? 2 : 1
                         }]}
-                        placeholder="Symbol (ex: AAPL/FB/NFLX)"
+                        placeholder="AAPL/FB/NFLX"
                         placeholderTextColor="grey"
                         pattern='^[a-zA-Z0-9]{2,}$'
                         onValidation={symbolIsValid => this.setState({ symbolIsValid })}
@@ -91,9 +92,9 @@ export default class SearchQuoteScreen extends React.Component {
                     />
                     <View style={styles.quote_container}>
                         <Text>Stock Option de : </Text>
-                        <Text>{quote.companyName}</Text>
+                        <Text style={styles.quote_text}>{quote.companyName}</Text>
                         <Text>Dernière valeur en bourse : </Text>
-                        <Text>{quote.latestPrice} $</Text>
+                        <Text style={styles.quote_text}>{quote.latestPrice} $</Text>
                     </View>
                     <Input
                         style={styles.input_howmany}
@@ -166,18 +167,22 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     input: {
-        height: responsiveHeight(5),
+        height: responsiveHeight(7),
         width: responsiveWidth(60),
         paddingHorizontal: 30,
         marginTop: 20,
+        textAlign: 'center',
+        fontSize: responsiveFontSize(3),
     },
     input_howmany: {
         borderColor: 'black',
         borderWidth: 1,
-        width: responsiveWidth(20),
+        width: responsiveWidth(35),
         height: responsiveHeight(7),
         paddingHorizontal: responsiveWidth(1.5),
         marginTop: responsiveHeight(5),
+        textAlign: 'center',
+        fontSize: responsiveFontSize(3),
     },
     button_plain: {
         marginTop: 10,
@@ -193,6 +198,12 @@ const styles = StyleSheet.create({
     quote_container: {
         alignItems: 'center',
         marginTop: 30,
+        width: responsiveWidth(70),
+    },
+    quote_text: {
+        fontSize: responsiveFontSize(3),
+        color: '#0babdd',
+        fontWeight: 'bold',
     },
     footer: {
         flex: 1,
