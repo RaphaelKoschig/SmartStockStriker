@@ -45,7 +45,7 @@ export default class DashboardScreen extends React.Component {
                     userTransactionsGroup.forEach(transaction => {
                         getQuote(transaction.symbol, (quote) => {
                             var roundQuotePrice = Number(quote.latestPrice).toFixed(2)
-                            var roundTotalprice = Number(transaction.totalprice).toFixed(2)
+                            var roundTotalprice = Number(transaction.totalshares*quote.latestPrice).toFixed(2)
                             var userTransaction = [quote.symbol, quote.companyName, transaction.totalshares, roundQuotePrice + '$', roundTotalprice + '$']
                             try {
                                 tableData.push(userTransaction)

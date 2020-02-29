@@ -6,7 +6,7 @@ header('Content-Type: application/json');
  * connexion à la base de données
  */
 try {
-    $connexion = new PDO('mysql:host=db5000296647.hosting-data.io;dbname=dbs289874','dbu136770','JD90200jd*');
+    $connexion = new PDO('mysql:host=db5000303592.hosting-data.io;dbname=dbs296581','dbu526227','raph1188SSSDB!:;,');
     $retour["success"] = true;
 }
 catch(Exception $ex) {
@@ -14,9 +14,9 @@ catch(Exception $ex) {
 }
 $mail = $_POST['mail'];
 $password = $_POST['password'];
-$request = $connexion->prepare("update users set password = :password where pseudo = :pseudo");
+$request = $connexion->prepare("UPDATE user SET user_password = :user_password WHERE user_mail = :user_mail");
 $bindings = array(
-    ':pseudo' => $mail, ':password' => $password
+    ':user_mail' => $mail, ':user_password' => $password
 );
 $request->execute($bindings);
 

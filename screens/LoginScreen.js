@@ -5,6 +5,7 @@ import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-nat
 import { Button } from 'react-native-elements';
 import Input from '../components/Input';
 import { UserManager } from '../models/UserManager';
+import { getUser } from '../models/UserManager2';
 
 export default class LoginScreen extends React.Component {
 
@@ -21,8 +22,9 @@ export default class LoginScreen extends React.Component {
         const { checkEmail } = this.state;
         const { checkPassword } = this.state;
 
-        const user = new UserManager();
+        //const user = new UserManager();
 
+        /*
         const _onLoginPressed = () => {
             if (checkEmail == "" || checkPassword == "") {
                 Toast.show('Veuillez remplir tous les champs !')
@@ -32,6 +34,24 @@ export default class LoginScreen extends React.Component {
                 })
             }
         }
+        */
+
+       const _onLoginPressed = () => {
+        if (checkEmail == "" || checkPassword == "") {
+            Toast.show('Veuillez remplir tous les champs !')
+        } else {
+            try {
+                getUser(checkEmail, checkPassword, (user) => {
+                    console.log(user_name, user_mail)
+                    this.props.navigation.navigate('Dashboard', { username: user.user_name, usermail: user.user_mail })
+                })
+            } catch (error) {
+                Toast.show('Identifiants incorrects !')
+            }
+            
+            
+        }
+    }
 
         return (
             <View style={styles.container}>
