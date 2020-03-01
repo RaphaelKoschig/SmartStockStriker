@@ -2,9 +2,7 @@
 
 header('Content-Type: application/json');
 
-/**
- * connexion à la base de données
- */
+
 try {
     $connexion = new PDO('mysql:host=db5000303592.hosting-data.io;dbname=dbs296581','dbu526227','raph1188SSSDB!:;,');
     $retour["success"] = true;

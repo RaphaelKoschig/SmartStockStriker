@@ -8,6 +8,8 @@ import { getQuote } from '../models/QuoteManager';
 import { UserManager } from '../models/UserManager';
 import { TransactionManager } from '../models/TransactionManager';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { getUser } from '../models/UserManager2';
+import { sellShares, buyShares } from '../models/TransactionManager2';
 
 export default class SearchQuoteScreen extends React.Component {
 
@@ -34,10 +36,8 @@ export default class SearchQuoteScreen extends React.Component {
         const { quote } = this.state;
         const { number } = this.state;
         const navigation = this.props.navigation;
-        const usermail = navigation.getParam('usermail', 'Noname');
-
-        const user = new UserManager();
-        const transaction = new TransactionManager();
+        const usermail = navigation.getParam('usermail', null);
+        const userpassword = navigation.getParam('userpassword', null);
 
         const _onSearchPressed = () => {
             if (!symbolIsValid) {
@@ -51,19 +51,41 @@ export default class SearchQuoteScreen extends React.Component {
         }
 
         const _onBuyPressed = () => {
-            user.getUserId(usermail, (userId) => {
-                transaction.buyShares(number, quote.latestPrice, quote.symbol, userId, (success) => {
-                    this.props.navigation.navigate('Dashboard', {usermail: usermail});
+            if (number == '') {
+                Toast.show('Veuillez indiquer un nombre d\'actions !')
+            }
+            else {
+                getUser(usermail, userpassword, (user) => {
+                    buyShares(number, quote.latestPrice, quote.symbol, user.user_id, (success) => {
+                        if(success.buy_success){
+                            Toast.show('Achat effectué !')
+                            this.props.navigation.navigate('Dashboard', { usermail: usermail, userpassword: userpassword });
+                        }
+                        else{
+                            Toast.show('Vous n\'avez pas assez de cash !')
+                        }
+                    })
                 })
-            })
+            }
         }
 
         const _onSellPressed = () => {
-            user.getUserId(usermail, (userId) => {
-                transaction.sellShares(number, quote.latestPrice, quote.symbol, userId, (success) => {
-                    this.props.navigation.navigate('Dashboard', {usermail: usermail});
+            if (number == '') {
+                Toast.show('Veuillez indiquer un nombre d\'actions !')
+            }
+            else {
+                getUser(usermail, userpassword, (user) => {
+                    sellShares(number, quote.latestPrice, quote.symbol, user.user_id, (success) => {
+                        if (success.sell_success) {
+                            Toast.show('Vente effectuée !')
+                            this.props.navigation.navigate('Dashboard', { usermail: usermail, userpassword: userpassword });
+                        } 
+                        else {
+                            Toast.show('Vous n\'avez pas assez d\'actions de cette entreprise !')
+                        }
+                    })
                 })
-            })
+            }
         }
 
         return (

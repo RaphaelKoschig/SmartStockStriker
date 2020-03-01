@@ -1,6 +1,6 @@
 <?php
 
-//header('Content-Type: application/json');
+header('Content-Type: application/json');
 
 try {
     $connexion = new PDO('mysql:host=db5000303592.hosting-data.io;dbname=dbs296581','dbu526227','raph1188SSSDB!:;,');
@@ -12,6 +12,7 @@ catch(Exception $ex) {
 
 $number = $_POST['number'];
 $price = $_POST['price'];
+$totalPrice = $_POST['totalprice'];
 $symbol = $_POST['symbol'];
 $user_id = $_POST['id'];
 
@@ -34,7 +35,6 @@ $response_totalshares = $request->fetchAll(PDO::FETCH_ASSOC);
 $quote_totalshares = $response_totalshares[0]['totalshares'];
 if($number <= $quote_totalshares)
 {
-    $totalPrice = $number * $price;
     $user_cash += $totalPrice;
 
     $request = $connexion->prepare("UPDATE user SET user_cash = :user_cash WHERE user_id = :user_id;");
@@ -44,20 +44,24 @@ if($number <= $quote_totalshares)
     );
     $request->execute($bindings);
     $request = $connexion->prepare("INSERT INTO 
-    transaction (user_id, trans_symbol, trans_shares, trans_price) 
-    VALUES (:user_id, :trans_symbol, :trans_shares, :trans_price);");
+    transaction (user_id, trans_symbol, trans_soloprice, trans_shares, trans_price) 
+    VALUES (:user_id, :trans_symbol, :trans_soloprice, :trans_shares, :trans_price);");
         $bindings = array(
             ':user_id' => $user_id,
             ':trans_symbol' => $symbol,
+            ':trans_soloprice' => $price,
             ':trans_shares' => -($number),
-            ':trans_price' => $price,
+            ':trans_price' => $totalPrice,
         );
     $request->execute($bindings);
-    echo json_encode(true);
+    $retour["sell_success"] = true;
+}
+else{
+    $retour["sell_success"] = false;
 }
 
 
 
-echo json_encode($retour["success"]);
+echo json_encode($retour);
 
 ?>

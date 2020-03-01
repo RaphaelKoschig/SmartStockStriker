@@ -12,6 +12,7 @@ catch(Exception $ex) {
 
 $number = $_POST['number'];
 $price = $_POST['price'];
+$totalPrice = $_POST['totalprice'];
 $symbol = $_POST['symbol'];
 $user_id = $_POST['id'];
 
@@ -23,8 +24,6 @@ $request->execute($bindings);
 $response_cash = $request->fetchAll(PDO::FETCH_ASSOC);
 $user_cash = $response_cash[0]['user_cash'];
 
-$totalPrice = $number * $price;
-
 if ($user_cash >= $totalPrice)
 {
     $user_cash -= $totalPrice;
@@ -35,19 +34,21 @@ if ($user_cash >= $totalPrice)
     );
     $request->execute($bindings);
     $request2 = $connexion->prepare("INSERT INTO 
-    transaction (user_id, trans_symbol, trans_shares, trans_price) 
-    VALUES (:user_id, :trans_symbol, :trans_shares, :trans_price);");
+    transaction (user_id, trans_symbol, trans_soloprice, trans_shares, trans_price) 
+    VALUES (:user_id, :trans_symbol, :trans_soloprice, :trans_shares, :trans_price);");
         $bindings = array(
             ':user_id' => $user_id,
             ':trans_symbol' => $symbol,
+            ':trans_soloprice' => $price,
             ':trans_shares' => $number,
-            ':trans_price' => $price,
+            ':trans_price' => $totalPrice,
         );
     $request2->execute($bindings);
-    echo json_encode(true);
+    $retour["buy_success"] = true;
+}
+else{
+    $retour["buy_success"] = false;
 }
 
-
-echo json_encode($retour["success"]);
-
+echo json_encode($retour);
 ?>

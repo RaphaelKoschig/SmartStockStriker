@@ -22,36 +22,19 @@ export default class LoginScreen extends React.Component {
         const { checkEmail } = this.state;
         const { checkPassword } = this.state;
 
-        //const user = new UserManager();
-
-        /*
         const _onLoginPressed = () => {
             if (checkEmail == "" || checkPassword == "") {
                 Toast.show('Veuillez remplir tous les champs !')
             } else {
-                user.connectUser(checkEmail, checkPassword, (user) => {
-                    this.props.navigation.navigate('Dashboard', { username: user.name, usermail: user.email })
-                })
-            }
-        }
-        */
-
-       const _onLoginPressed = () => {
-        if (checkEmail == "" || checkPassword == "") {
-            Toast.show('Veuillez remplir tous les champs !')
-        } else {
-            try {
                 getUser(checkEmail, checkPassword, (user) => {
-                    console.log(user_name, user_mail)
-                    this.props.navigation.navigate('Dashboard', { username: user.user_name, usermail: user.user_mail })
+                    if (user) {
+                        this.props.navigation.navigate('Dashboard', { username: user.user_name, usermail: checkEmail, userpassword: checkPassword })
+                    } else {
+                        Toast.show('Identifiants incorrects !')
+                    }
                 })
-            } catch (error) {
-                Toast.show('Identifiants incorrects !')
             }
-            
-            
         }
-    }
 
         return (
             <View style={styles.container}>

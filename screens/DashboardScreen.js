@@ -12,13 +12,14 @@ export default class DashboardScreen extends React.Component {
         super(props)
 
         this.state = {
-            usermail: props.navigation.getParam('usermail', 'Noname'),
+            usermail: props.navigation.getParam('usermail', null),
         }
     }
 
     render() {
         const navigation = this.props.navigation;
         const username = navigation.getParam('username', 'Noname');
+        const userpassword = navigation.getParam('userpassword', null);
         const { usermail } = this.state;
 
         const _onLogoutPressed = () => {
@@ -33,11 +34,11 @@ export default class DashboardScreen extends React.Component {
                     <Text style={styles.titleDash}>Dashboard de {username}</Text>
                     <Button buttonStyle={styles.button_plain}
                         title="ACHETER/VENDRE"
-                        onPress={() => this.props.navigation.navigate('SearchQuote', { usermail: usermail })}
+                        onPress={() => this.props.navigation.navigate('SearchQuote', { usermail: usermail, userpassword: userpassword })}
                     />
                 </View>
                 <View style={styles.content}>
-                    <TransactionTable usermail={usermail}/>
+                    <TransactionTable usermail={usermail} userpassword={userpassword}/>
                 </View>
                 <View style={styles.footer}>
                     <TouchableOpacity onPress={_onLogoutPressed}>
