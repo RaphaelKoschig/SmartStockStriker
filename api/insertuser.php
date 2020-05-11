@@ -2,6 +2,8 @@
 
 header('Content-Type: application/json');
 
+$retour = [];
+
 try {
     $connexion = new PDO('mysql:host=db5000303592.hosting-data.io;dbname=dbs296581','dbu526227','raph1188SSSDB!:;,');
     $retour["success"] = true;
@@ -16,20 +18,21 @@ $password = $_POST['password'];
 $request = $connexion->prepare("SELECT * FROM user");
 $request->execute();
 
-$retour = $request->fetchAll(PDO::FETCH_ASSOC);
-$isgood = false;
-for ($i=0; $i<sizeof($retour); $i++){
-    if($retour[$i]['user_mail'] == $mail){
-        $isgood = true;
+$response = $request->fetchAll(PDO::FETCH_ASSOC);
+$mailExists = false;
+for ($i=0; $i<sizeof($response); $i++){
+    if($response[$i]['user_mail'] == $mail){
+        $mailExists = true;
+        $retour["registration"] = false;
     }
 }
-if($isgood == false){
+if($mailExists == false){
     $request = $connexion->prepare("INSERT INTO user (user_name, user_mail, user_password) VALUES (:user_name, :user_mail, :user_password)");
     $bindings = array(
         ':user_name' => $name, ':user_mail' => $mail, ':user_password' => $password
     );
     $request->execute($bindings);
-    echo json_encode(true);
+    $retour["registration"] = true;
 }
 
 
@@ -37,6 +40,6 @@ if($isgood == false){
 
 
 
-echo json_encode($retour["success"]);
+echo json_encode($retour);
 
 ?>

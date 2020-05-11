@@ -19,14 +19,14 @@ function getUser(mail, password, callback) {
         })
             .then((response) => response.json())
             .then((responseJson) => {
-                callback(responseJson)
+                callback(responseJson);
             })
             .catch((error) => {
                 console.error(error);
             });
 }
 
-function insertUser(name, mail, password) {
+function insertUser(name, mail, password, callback) {
     var formData = new FormData();
     formData.append('name', name)
     formData.append('mail', mail)
@@ -35,8 +35,9 @@ function insertUser(name, mail, password) {
     method: 'POST',
       body: formData
     })
-        .then((response) => {
-            console.log("user registered")
+        .then((response) => response.json())
+            .then((responseJson) => {
+                callback(responseJson);
         }).catch((error) => {
             console.error(error);
         })

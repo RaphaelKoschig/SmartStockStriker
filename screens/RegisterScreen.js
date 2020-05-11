@@ -6,6 +6,7 @@ import { Button } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Input from '../components/Input';
 import { UserManager } from '../models/UserManager';
+import { insertUser } from '../models/UserManager2';
 
 export default class RegisterScreen extends React.Component {
 
@@ -47,10 +48,12 @@ export default class RegisterScreen extends React.Component {
                     Toast.show('Password invalide !')
                 }
                 else {
-                        user.addUser(name, email, password, (success) => {
-                            if (success != undefined) {
-                                Toast.show('Vos informations ont été enregistrées')
+                        insertUser(name, email, password, (userRegistration) => {
+                            if (userRegistration.registration) {
                                 this.props.navigation.navigate('Home');
+                                Toast.show('Vos informations ont été enregistrées');
+                            } else {
+                                Toast.show('Email déjà pris, veuillez recommencer.');
                             }
                         })
                 }
