@@ -5,9 +5,9 @@ import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-nat
 import Input from '../components/Input';
 import { Button } from 'react-native-elements';
 import { getQuote } from '../models/QuoteManager';
-import { UserManager } from '../models/UserManager';
-import { TransactionManager } from '../models/TransactionManager';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { getUser } from '../models/UserManager2';
+import { sellShares, buyShares } from '../models/TransactionManager2';
 
 export default class SearchQuoteScreen extends React.Component {
 
@@ -34,10 +34,8 @@ export default class SearchQuoteScreen extends React.Component {
         const { quote } = this.state;
         const { number } = this.state;
         const navigation = this.props.navigation;
-        const usermail = navigation.getParam('usermail', 'Noname');
-
-        const user = new UserManager();
-        const transaction = new TransactionManager();
+        const usermail = navigation.getParam('usermail', null);
+        const userpassword = navigation.getParam('userpassword', null);
 
         const _onSearchPressed = () => {
             if (!symbolIsValid) {
@@ -51,25 +49,56 @@ export default class SearchQuoteScreen extends React.Component {
         }
 
         const _onBuyPressed = () => {
-            user.getUserId(usermail, (userId) => {
-                transaction.buyShares(number, quote.latestPrice, quote.symbol, userId, (success) => {
-                    this.props.navigation.navigate('Dashboard', {usermail: usermail});
+            if (number == '' || number == 0 ) {
+                Toast.show('Veuillez indiquer un nombre d\'actions !')
+            }
+            else if(quote.symbol == '') {
+                Toast.show('Veuillez chercher une action en bourse !')
+            }
+            else {
+                getUser(usermail, userpassword, (user) => {
+                    buyShares(number, quote.latestPrice, quote.symbol, user.user_id, (success) => {
+                        if(success.buy_success){
+                            Toast.show('Achat effectué !')
+                            this.props.navigation.navigate('Dashboard', { usermail: usermail, userpassword: userpassword });
+                        }
+                        else{
+                            Toast.show('Vous n\'avez pas assez de cash !')
+                        }
+                    })
                 })
-            })
+            }
         }
 
         const _onSellPressed = () => {
-            user.getUserId(usermail, (userId) => {
-                transaction.sellShares(number, quote.latestPrice, quote.symbol, userId, (success) => {
-                    this.props.navigation.navigate('Dashboard', {usermail: usermail});
+            if (number == '' || number == 0) {
+                Toast.show('Veuillez indiquer un nombre d\'actions !')
+            }
+            else if(quote.symbol == '') {
+                Toast.show('Veuillez chercher une action en bourse !')
+            }
+            else {
+                getUser(usermail, userpassword, (user) => {
+                    sellShares(number, quote.latestPrice, quote.symbol, user.user_id, (success) => {
+                        if (success.sell_success) {
+                            Toast.show('Vente effectuée !')
+                            this.props.navigation.navigate('Dashboard', { usermail: usermail, userpassword: userpassword });
+                        } 
+                        else {
+                            Toast.show('Vous n\'avez pas assez d\'actions de cette entreprise !')
+                        }
+                    })
                 })
-            })
+            }
         }
 
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
                     <Text style={styles.title}>$MART $TOCK $TRIKER</Text>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Dashboard')}>
+                        <Text style={styles.text_unlogin}>Dashboard</Text>
+                    </TouchableOpacity>
                     <Text style={styles.titleSearch}>Indiquez un symbole boursier</Text>
                 </View>
                 <View style={styles.content}>
@@ -121,12 +150,6 @@ export default class SearchQuoteScreen extends React.Component {
                         />
                     </View>
                 </View>
-                <View style={styles.footer}>
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Dashboard')}>
-                        <Text style={styles.text_unlogin}>Dashboard</Text>
-                    </TouchableOpacity>
-                </View>
-
             </View>
         )
     }
@@ -141,20 +164,18 @@ const styles = StyleSheet.create({
         flex: 2,
         justifyContent: 'flex-end',
         alignItems: 'center',
-        //backgroundColor: 'red',
     },
     content: {
         flex: 8,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        //backgroundColor: 'green',
     },
     title: {
         fontSize: responsiveFontSize(3.5),
         fontFamily: 'sans-serif-medium',
         fontWeight: 'bold',
         color: '#3f99b5',
-        marginBottom: 10,
+        marginBottom: 5,
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderTopColor: '#d6d7da',
@@ -204,9 +225,6 @@ const styles = StyleSheet.create({
         fontSize: responsiveFontSize(3),
         color: '#0babdd',
         fontWeight: 'bold',
-    },
-    footer: {
-        flex: 1,
     },
     text_unlogin: {
         color: '#3f99b5',

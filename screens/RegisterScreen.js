@@ -5,7 +5,7 @@ import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-nat
 import { Button } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Input from '../components/Input';
-import { UserManager } from '../models/UserManager';
+import { insertUser } from '../models/UserManager2';
 
 export default class RegisterScreen extends React.Component {
 
@@ -30,8 +30,6 @@ export default class RegisterScreen extends React.Component {
         const { email } = this.state;
         const { password } = this.state;
 
-        const user = new UserManager();
-
         const _onRegisterPressed = () => {
             if (name == "" || email == "" || password == "") {
                 Toast.show('Veuillez remplir tous les champs !')
@@ -47,10 +45,12 @@ export default class RegisterScreen extends React.Component {
                     Toast.show('Password invalide !')
                 }
                 else {
-                        user.addUser(name, email, password, (success) => {
-                            if (success != undefined) {
-                                Toast.show('Vos informations ont été enregistrées')
+                        insertUser(name, email, password, (userRegistration) => {
+                            if (userRegistration.registration) {
                                 this.props.navigation.navigate('Home');
+                                Toast.show('Vos informations ont été enregistrées');
+                            } else {
+                                Toast.show('Email déjà pris, veuillez recommencer.');
                             }
                         })
                 }
@@ -67,10 +67,11 @@ export default class RegisterScreen extends React.Component {
                     }]}
                     placeholder="Nom"
                     placeholderTextColor="grey"
-                    pattern='^[a-zA-Z]{3,}$'
+                    pattern='^[a-zA-Zéèë]{3,}$'
                     onValidation={nameIsValid => this.setState({ nameIsValid })}
                     onChangeText={(text) => this.setState({ name: text })}
                     leftIcon={{ type: 'font-awesome', name: 'chevron-left' }}
+                    autoCapitalize = 'none'
                 />
                 <Input
                     style={[styles.input, {
@@ -83,6 +84,7 @@ export default class RegisterScreen extends React.Component {
                     pattern='^[a-zA-Z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$'
                     onValidation={emailIsValid => this.setState({ emailIsValid })}
                     onChangeText={(text) => this.setState({ email: text })}
+                    autoCapitalize = 'none'
                 />
                 <Input
                     style={[styles.input, {
@@ -95,6 +97,7 @@ export default class RegisterScreen extends React.Component {
                     pattern={['[a-zA-Z]{1,14}', '[0-9]{1,14}', '^[a-zA-Z0-9]{4,15}$']}
                     onValidation={passwordIsValid => this.setState({ passwordIsValid })}
                     onChangeText={(text) => this.setState({ password: text })}
+                    autoCapitalize = 'none'
                 />
                 <Text>4 à 15 caractères</Text>
                 <Text>Au moins un chiffre</Text>

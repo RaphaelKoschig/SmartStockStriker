@@ -4,7 +4,6 @@ import Toast from 'react-native-simple-toast';
 import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-native-responsive-dimensions'
 import { Button } from 'react-native-elements';
 import Input from '../components/Input';
-import { UserManager } from '../models/UserManager';
 import { getUser } from '../models/UserManager2';
 
 export default class LoginScreen extends React.Component {
@@ -22,36 +21,19 @@ export default class LoginScreen extends React.Component {
         const { checkEmail } = this.state;
         const { checkPassword } = this.state;
 
-        //const user = new UserManager();
-
-        /*
         const _onLoginPressed = () => {
             if (checkEmail == "" || checkPassword == "") {
                 Toast.show('Veuillez remplir tous les champs !')
             } else {
-                user.connectUser(checkEmail, checkPassword, (user) => {
-                    this.props.navigation.navigate('Dashboard', { username: user.name, usermail: user.email })
-                })
-            }
-        }
-        */
-
-       const _onLoginPressed = () => {
-        if (checkEmail == "" || checkPassword == "") {
-            Toast.show('Veuillez remplir tous les champs !')
-        } else {
-            try {
                 getUser(checkEmail, checkPassword, (user) => {
-                    console.log(user_name, user_mail)
-                    this.props.navigation.navigate('Dashboard', { username: user.user_name, usermail: user.user_mail })
+                    if (user) {
+                        this.props.navigation.navigate('Dashboard', { username: user.user_name, usermail: checkEmail, userpassword: checkPassword })
+                    } else {
+                        Toast.show('Identifiants incorrects !')
+                    }
                 })
-            } catch (error) {
-                Toast.show('Identifiants incorrects !')
             }
-            
-            
         }
-    }
 
         return (
             <View style={styles.container}>
@@ -66,6 +48,7 @@ export default class LoginScreen extends React.Component {
                         keyboardType='email-address'
                         pattern='^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$'
                         onChangeText={(text) => this.setState({ checkEmail: text })}
+                        autoCapitalize = 'none'
                     />
                     <TextInput
                         style={styles.input}
@@ -73,6 +56,7 @@ export default class LoginScreen extends React.Component {
                         placeholderTextColor="grey"
                         secureTextEntry={true}
                         onChangeText={(text) => this.setState({ checkPassword: text })}
+                        autoCapitalize = 'none'
                     />
                     <Button buttonStyle={styles.button_plain}
                         title="CONNEXION"
@@ -104,13 +88,11 @@ const styles = StyleSheet.create({
         flex: 2,
         justifyContent: 'flex-end',
         alignItems: 'center',
-        //backgroundColor: 'red',
     },
     content: {
         flex: 8,
         justifyContent: 'center',
         alignItems: 'center',
-        //backgroundColor: 'green',
     },
     title: {
         fontSize: responsiveFontSize(3.5),

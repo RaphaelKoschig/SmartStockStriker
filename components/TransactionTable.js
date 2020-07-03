@@ -3,8 +3,9 @@ import { StyleSheet, View, ActivityIndicator, Text } from 'react-native'
 import { responsiveFontSize, responsiveHeight } from 'react-native-responsive-dimensions'
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
 import { ScrollView } from 'react-native-gesture-handler';
-import { UserManager } from '../models/UserManager';
 import { getQuote } from '../models/QuoteManager';
+import { getUser } from '../models/UserManager2';
+import { getUserTransactionsGroup } from '../models/TransactionManager2';
 
 export default class DashboardScreen extends React.Component {
 
@@ -13,6 +14,7 @@ export default class DashboardScreen extends React.Component {
 
         this.state = {
             usermail: this.props.usermail,
+            userpassword: this.props.userpassword,
             refresh: this.props.refresh,
             tableHead: ['Symbol', 'Entreprise', 'Actions', 'Valeur Unitaire', 'Total'],
             tableData: [],
@@ -22,66 +24,63 @@ export default class DashboardScreen extends React.Component {
         }
     }
 
-    mountTable(usermail){
-        const user = new UserManager();
-
-        user.getUserCash(usermail, (usercash) => {
-            var roundUsercash = Number(usercash).toFixed(2)
-            this.setState({ tableFooter: ['Portefeuille', roundUsercash + '$'] })
-            user.getUserId(usermail, (userId) => {
-                user.getUserTotalSharesValue(userId, (totalSharesValue) => {
-                    var roundGlobalTotal = Number(usercash + totalSharesValue).toFixed(2)
-                    this.setState({ tableTotal: ['Actions + Portefeuille', roundGlobalTotal + '$'] })
-                })
-            })
-        })
-
-        user.getUserId(usermail, (userId) => {
-            user.getUserTransactionsGroup(userId, (userTransactionsGroup) => {
+    mountTable(usermail, userpassword) {
+        getUser(usermail, userpassword, (user) => {
+            getUserTransactionsGroup(user.user_id, (userTransactionsGroup) => {
                 var tableData = [];
                 var counter = 0;
                 var limit = userTransactionsGroup.length;
+                var totalPriceOfTotalShares = 0;
+                this.setState({ tableFooter: ['Portefeuille', user.user_cash + '$'] });
                 if (limit > counter) {
                     userTransactionsGroup.forEach(transaction => {
-                        getQuote(transaction.symbol, (quote) => {
-                            var roundQuotePrice = Number(quote.latestPrice).toFixed(2)
-                            var roundTotalprice = Number(transaction.totalshares*quote.latestPrice).toFixed(2)
+                        getQuote(transaction.trans_symbol, (quote) => {
+                            var roundQuotePrice = (quote.latestPrice).toFixed(2)
+                            var TotalPrice = transaction.totalshares * quote.latestPrice;
+                            var roundTotalprice = TotalPrice.toFixed(2)
+                            totalPriceOfTotalShares = totalPriceOfTotalShares + TotalPrice;
                             var userTransaction = [quote.symbol, quote.companyName, transaction.totalshares, roundQuotePrice + '$', roundTotalprice + '$']
                             try {
                                 tableData.push(userTransaction)
-                                console.log(tableData)
+                                //console.log(tableData)
                                 tableData.sort()
                                 this.setState({ tableData: tableData })
                                 counter += 1;
-                                console.log(counter)
+                                //console.log(counter)
                             } catch (error) {
                                 console.log(error)
                             }
-                            if (counter == limit || limit == undefined) {
-                                this.setState({ isLoading: false })
+                            if (counter == limit) {
+                                var roundGlobalTotal = (Number(user.user_cash) + totalPriceOfTotalShares).toFixed(2);
+                                this.setState({ tableTotal: ['Actions + Portefeuille', roundGlobalTotal + '$'] });
+                                this.setState({ isLoading: false });
                             }
-                        });
-                    });
+                        }
+                        )
+                    }
+                    )
                 }
                 else {
                     this.setState({ isLoading: false })
                 }
-            });
-        });
+            })
+        })
     }
 
     componentDidMount() {
         const { usermail } = this.state;
-        this.mountTable(usermail);
+        const { userpassword } = this.state;
+        this.mountTable(usermail, userpassword);
     }
 
     UNSAFE_componentWillReceiveProps(props) {
         this.setState({ isLoading: true });
         const { usermail } = this.props;
+        const { userpassword } = this.props;
         if (props.usermail == usermail) {
-            this.mountTable(usermail);
+            this.mountTable(usermail, userpassword);
         }
-      }
+    }
 
     render() {
 

@@ -1,3 +1,5 @@
+// Première version avec SQLITE
+
 import * as SQLite from 'expo-sqlite';
 
 export class DatabaseManager {
