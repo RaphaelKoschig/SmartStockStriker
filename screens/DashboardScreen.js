@@ -61,12 +61,10 @@ const styles = StyleSheet.create({
         flex: 3,
         justifyContent: 'flex-end',
         alignItems: 'center',
-        //backgroundColor: 'red',
     },
     content: {
         flex: 8,
         justifyContent: 'flex-start',
-        //backgroundColor: 'green',
     },
     footer: {
         flex: 1,

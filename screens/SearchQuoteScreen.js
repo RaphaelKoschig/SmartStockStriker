@@ -5,8 +5,6 @@ import { responsiveFontSize, responsiveWidth, responsiveHeight } from 'react-nat
 import Input from '../components/Input';
 import { Button } from 'react-native-elements';
 import { getQuote } from '../models/QuoteManager';
-import { UserManager } from '../models/UserManager';
-import { TransactionManager } from '../models/TransactionManager';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { getUser } from '../models/UserManager2';
 import { sellShares, buyShares } from '../models/TransactionManager2';
@@ -51,8 +49,11 @@ export default class SearchQuoteScreen extends React.Component {
         }
 
         const _onBuyPressed = () => {
-            if (number == '') {
+            if (number == '' || number == 0 ) {
                 Toast.show('Veuillez indiquer un nombre d\'actions !')
+            }
+            else if(quote.symbol == '') {
+                Toast.show('Veuillez chercher une action en bourse !')
             }
             else {
                 getUser(usermail, userpassword, (user) => {
@@ -70,8 +71,11 @@ export default class SearchQuoteScreen extends React.Component {
         }
 
         const _onSellPressed = () => {
-            if (number == '') {
+            if (number == '' || number == 0) {
                 Toast.show('Veuillez indiquer un nombre d\'actions !')
+            }
+            else if(quote.symbol == '') {
+                Toast.show('Veuillez chercher une action en bourse !')
             }
             else {
                 getUser(usermail, userpassword, (user) => {
@@ -92,6 +96,9 @@ export default class SearchQuoteScreen extends React.Component {
             <View style={styles.container}>
                 <View style={styles.header}>
                     <Text style={styles.title}>$MART $TOCK $TRIKER</Text>
+                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Dashboard')}>
+                        <Text style={styles.text_unlogin}>Dashboard</Text>
+                    </TouchableOpacity>
                     <Text style={styles.titleSearch}>Indiquez un symbole boursier</Text>
                 </View>
                 <View style={styles.content}>
@@ -143,12 +150,6 @@ export default class SearchQuoteScreen extends React.Component {
                         />
                     </View>
                 </View>
-                <View style={styles.footer}>
-                    <TouchableOpacity onPress={() => this.props.navigation.navigate('Dashboard')}>
-                        <Text style={styles.text_unlogin}>Dashboard</Text>
-                    </TouchableOpacity>
-                </View>
-
             </View>
         )
     }
@@ -163,20 +164,18 @@ const styles = StyleSheet.create({
         flex: 2,
         justifyContent: 'flex-end',
         alignItems: 'center',
-        //backgroundColor: 'red',
     },
     content: {
         flex: 8,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        //backgroundColor: 'green',
     },
     title: {
         fontSize: responsiveFontSize(3.5),
         fontFamily: 'sans-serif-medium',
         fontWeight: 'bold',
         color: '#3f99b5',
-        marginBottom: 10,
+        marginBottom: 5,
         borderTopWidth: 2,
         borderBottomWidth: 2,
         borderTopColor: '#d6d7da',
@@ -226,9 +225,6 @@ const styles = StyleSheet.create({
         fontSize: responsiveFontSize(3),
         color: '#0babdd',
         fontWeight: 'bold',
-    },
-    footer: {
-        flex: 1,
     },
     text_unlogin: {
         color: '#3f99b5',

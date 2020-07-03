@@ -1,3 +1,5 @@
+// Première version avec SQLITE
+
 import * as SQLite from 'expo-sqlite';
 import Toast from 'react-native-simple-toast';
 

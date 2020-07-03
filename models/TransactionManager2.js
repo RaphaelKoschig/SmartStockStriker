@@ -1,3 +1,5 @@
+// Deuxième version avec appels API
+
 function buyShares(number, price, symbol, id, callback) {
     var formData = new FormData();
     formData.append('number', number)

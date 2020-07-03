@@ -1,3 +1,5 @@
+// Deuxième version avec appels API
+
 function getUsers() {
     return fetch("http://raphko.net/api/getusers.php")
         .then((response) => response.json())
